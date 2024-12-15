@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wallet Token Balances</title>
     <script>
+        // Function to fetch the token balances from PulseChain API
         async function fetchTokenBalances(walletAddress) {
             const url = `https://api.scan.pulsechain.com/api/addresses/${walletAddress}/token-balances`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                
                 return data.data; // Returns the token balances in the response
             } catch (error) {
                 console.error("Error fetching token balances:", error);
@@ -19,24 +19,70 @@
             }
         }
 
+        // Function to fetch the price of the token from Dexscreener API
+        async function fetchTokenPrice(tokenAddress) {
+            const url = `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                // Check if we have valid price data
+                if (data.pairs && data.pairs.length > 0 && data.pairs[0].priceUsd) {
+                    return parseFloat(data.pairs[0].priceUsd); // Return the price in USD
+                } else {
+                    return null; // Price not available
+                }
+            } catch (error) {
+                console.error("Error fetching token price:", error);
+                return null;
+            }
+        }
+
+        // Function to display the balances, their values, and total value
         async function displayBalances() {
             const walletAddress = '0xe101c45cb2352059139205177e29d16184db513b'; // Your wallet address
             const balances = await fetchTokenBalances(walletAddress);
 
             const balanceDisplay = document.getElementById('balances');
             balanceDisplay.innerHTML = ''; // Clear previous results
+            let totalValue = 0; // Variable to store the total value of all tokens
 
             if (balances && balances.length > 0) {
-                balances.forEach((token) => {
+                // Loop through each token balance
+                for (const token of balances) {
+                    const tokenName = token.token.name;
+                    const tokenSymbol = token.token.symbol;
+                    const tokenAddress = token.token.address; // Token address for fetching price
+                    const tokenValue = parseFloat(token.value); // Token balance value
+
+                    // Fetch the token price from Dexscreener
+                    const tokenPrice = await fetchTokenPrice(tokenAddress);
+
+                    // Create a display element for the token balance and its value
                     const tokenElement = document.createElement('div');
-                    tokenElement.innerText = `${token.token.name} (${token.token.symbol}): ${token.value}`;
+                    
+                    if (tokenPrice) {
+                        const tokenValueInUSD = tokenValue * tokenPrice; // Calculate the value in USD
+                        tokenElement.innerText = `${tokenName} (${tokenSymbol}): ${tokenValue} (${tokenPrice} USD) = $${tokenValueInUSD.toFixed(2)}`;
+                        totalValue += tokenValueInUSD; // Add token value to the total
+                    } else {
+                        tokenElement.innerText = `${tokenName} (${tokenSymbol}): ${tokenValue} (Price data not available)`;
+                    }
+
                     balanceDisplay.appendChild(tokenElement);
-                });
+                }
+
+                // Display the total value of all tokens
+                const totalValueElement = document.createElement('div');
+                totalValueElement.innerText = `Total Sacrificed so far = $${totalValue.toFixed(2)}`;
+                balanceDisplay.appendChild(totalValueElement);
             } else {
                 balanceDisplay.innerText = 'No token balances found.';
             }
         }
 
+        // Run the displayBalances function when the window loads
         window.onload = displayBalances;
     </script>
 </head>
