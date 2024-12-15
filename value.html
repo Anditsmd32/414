@@ -147,12 +147,11 @@ async function displayBalances() {
             tokenElement.classList.add("token");
             
             // Add token logo
-            if (tokenLogos[token.tokenName]) {
-                const logoImg = document.createElement("img");
-                logoImg.src = tokenLogos[token.tokenName];
-                logoImg.alt = `${token.tokenName} logo`;
-                tokenElement.appendChild(logoImg);
-            }
+            const logoImg = document.createElement("img");
+            logoImg.src = tokenLogos[token.tokenName] || 'default-logo.png'; // Use a default logo if not found
+            logoImg.alt = `${token.tokenName} logo`;
+            logoImg.onerror = function() { this.style.display = 'none'; }; // Hide image if it fails to load
+            tokenElement.appendChild(logoImg);
             
             const tokenText = document.createElement("span");
             tokenText.innerText = `${token.tokenName} (${token.tokenSymbol}): ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}`;
@@ -184,3 +183,4 @@ window.onload = displayBalances;
 </body>
 
 </html>
+
