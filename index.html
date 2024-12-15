@@ -11,6 +11,8 @@
             font-family: "Poppins", sans-serif;
             font-weight: 400;
             font-style: normal;
+            scroll-behavior: smooth;
+
             }
         * {
             margin: 0;
@@ -26,14 +28,20 @@
 </head>
 <body>
 
-    <div class="sticky-div" style="display: inline-block;width: 100%;background-color: black;margin:0px;height:40px;">
+    <div  class="sticky-div" style="display: inline-block;width: 100%;background-color: black;margin:0px;height:40px;">
         <div style="width:1100px;margin-left:auto;margin-right:auto;color:white;line-height: 40px;">    
             FOUR<span style="color:goldenrod;font-weight: bold;">1</span>FOUR
-            <span style="float:right">HOME<span style="color:goldenrod;word-spacing: 5px;"> | </span>FEATURES<span style="color:goldenrod;word-spacing: 5px;"> | </span>TOKENOMICS<span style="color:goldenrod;word-spacing: 5px;"> | </span>LIQUIDITY<span style="color:goldenrod;word-spacing: 5px;"> | </span>PRESALE<span style="color:goldenrod;word-spacing: 5px;"> | </span>COMMUNITY</span>
+            <span style="float:right">
+                <a style="text-decoration: none; color:white;" href="#home">HOME</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#features">FEATURES</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#tokenomics">TOKENOMICS</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#liquidity">LIQUIDITY</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#calculator">CALCULATOR</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#community">COMMUNITY</a></span>
         </div>
     </div>
 
-    <div style="width: 100%;margin:0px;background-image: url('header.jpeg'); height: 450px;background-size: cover;background-position: center;"></div>
+    <div id="home" style="width: 100%;margin:0px;background-image: url('img/header.jpeg'); height: 450px;background-size: cover;background-position: center;"></div>
 
     <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
 
@@ -46,7 +54,7 @@
 
     <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
     
-    <div style="display: inline-block;width: 100%;background-image: url('img1.png'); height: 650px;background-size: cover;background-position: center;">
+    <div id="features" style="display: inline-block;width: 100%;background-image: url('img/img1.png'); height: 650px;background-size: cover;background-position: center;">
         <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-right:500px;padding-top:80px;">  
             <h2 style="margin-bottom:20px">FOUR<span style="color:goldenrod;font-weight: bold;">1</span>FOUR FEATURES</h2>
             
@@ -66,7 +74,77 @@
 
     <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
 
-    <div style="display: inline-block;width: 100%;background-image: url('tokenomics.png'); height: 800px;background-size: cover;background-position: center;">
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>CONTRACT ADDRESS: 0x0000000000000000000000000000<br>
+            
+           </h2></center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div id="tokenomics" style="width: 100%;background-image: url('img/tokenomics.png'); height: 800px;background-size: cover;background-position: center;"></div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>            TOTAL SUPPLY: 420 TOKENS<br>
+           </h2></center>
+        </div>
+    </div>
+    
+
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div id="liquidity" style="width: 100%;background-image: url('img/img2.png'); height: 800px;background-size: cover;background-position: center;"></div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>No Staking, No Claiming, Just Rewards!<br>
+           </h2></center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div id="calculator" style="width: 100%;background-image: url('img/img3.png'); height: 800px;background-size: cover;background-position: center;padding-top:160px;">
+
+        <center>
+            <input type="text" placeholder="Enter wallet address" style="padding: 10px 15px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; width: 100%; max-width: 300px; box-sizing: border-box; margin-bottom: 10px; text-align: center;">
+            <br>
+            <button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: goldenrod; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;">Check Rewards</button>
+            <br><br>
+            <h4 style="color:#ccc;padding-top:5px;">
+                On the way to you: 500 ATROPA<br>
+                Total Printed: 10.000 ATROPA
+            </h4>
+        
+        </center>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+    
+    <div id="community" style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>Join Our Community!<br>
+           </h2>
+        <br>
+           <button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: black; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;"> GO TO TELEGRAM</button><br><br>
+  
+        </center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
 
     </div>
 </body>
