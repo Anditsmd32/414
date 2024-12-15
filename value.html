@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Token Balances</title>
+    <script>
+        async function fetchTokenBalances(walletAddress) {
+            const url = `https://api.scan.pulsechain.com/api/addresses/${walletAddress}/token-balances`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                return data.data; // Returns the token balances in the response
+            } catch (error) {
+                console.error("Error fetching token balances:", error);
+                return null;
+            }
+        }
+
+        async function displayBalances() {
+            const walletAddress = '0xe101c45cb2352059139205177e29d16184db513b'; // Your wallet address
+            const balances = await fetchTokenBalances(walletAddress);
+
+            const balanceDisplay = document.getElementById('balances');
+            balanceDisplay.innerHTML = ''; // Clear previous results
+
+            if (balances && balances.length > 0) {
+                balances.forEach((token) => {
+                    const tokenElement = document.createElement('div');
+                    tokenElement.innerText = `${token.token.name} (${token.token.symbol}): ${token.value}`;
+                    balanceDisplay.appendChild(tokenElement);
+                });
+            } else {
+                balanceDisplay.innerText = 'No token balances found.';
+            }
+        }
+
+        window.onload = displayBalances;
+    </script>
+</head>
+<body>
+    <h1>Wallet Token Balances</h1>
+    <div id="balances">Loading...</div>
+</body>
+</html>
