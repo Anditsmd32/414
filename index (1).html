@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Een basis HTML-pagina">
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+
+    <title>FOUR1FOUR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        html {
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            scroll-behavior: smooth;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .sticky-div {
+            position: sticky;
+            top: 0; /* Adjust this value to control how far from the top of the viewport the element sticks */
+            z-index: 10; /* Ensures the sticky element stays on top of other content */
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #balances {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .token {
+            margin: 10px 0;
+        }
+
+        .total-value {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .head1,#head1 {
+            font-size: 28px;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+    <script>
+        // Initialize Web3
+        const web3 = new Web3("https://rpc.pulsechain.com");
+
+        const daiTokenAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F"; // DAI Stablecoin (DAI)
+        const lpContractAddress = "0xfC64556FAA683e6087F425819C7Ca3C558e13aC1";
+        const lpAbi = [
+            {
+                constant: true,
+                inputs: [],
+                name: "getReserves",
+                outputs: [
+                    { name: "reserve0", type: "uint112" },
+                    { name: "reserve1", type: "uint112" }
+                ],
+                payable: false,
+                stateMutability: "view",
+                type: "function"
+            }
+        ];
+
+        const tokenAbi = [
+            {
+                constant: true,
+                inputs: [{ name: "_owner", type: "address" }],
+                name: "balanceOf",
+                outputs: [{ name: "balance", type: "uint256" }],
+                payable: false,
+                stateMutability: "view",
+                type: "function"
+            }
+        ];
+
+        // Fetch DAI price from the LP contract
+        async function fetchDAIPriceFromLP() {
+            const lpContract = new web3.eth.Contract(lpAbi, lpContractAddress);
+            try {
+                const reserves = await lpContract.methods.getReserves().call();
+                const reserveDAI = parseFloat(reserves.reserve0); // Assume DAI is reserve0
+                const reserveOther = parseFloat(reserves.reserve1); // Other token in the LP
+                const daiPrice = reserveOther / reserveDAI; // Price calculation
+                console.log(`DAI Price from LP: $${daiPrice.toFixed(4)}`);
+                return daiPrice;
+            } catch (error) {
+                console.error("Error fetching DAI price:", error);
+                return null;
+            }
+        }
+
+        // Fetch token price from Dexscreener API
+        async function fetchTokenPrice(tokenAddress) {
+            const url = `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error(`Error fetching price for token ${tokenAddress}: ${response.statusText}`);
+                    return null;
+                }
+                const data = await response.json();
+                if (data.pairs && data.pairs.length > 0 && data.pairs[0].priceUsd) {
+                    return parseFloat(data.pairs[0].priceUsd);
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                console.error(`Error fetching token price for ${tokenAddress}:`, error);
+                return null;
+            }
+        }
+
+        // Fetch native token price from CoinGecko
+        async function fetchNativeTokenPrice() {
+            const url = `https://api.coingecko.com/api/v3/simple/price?ids=pulsechain&vs_currencies=usd`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error("Error fetching native token price:", response.statusText);
+                    return null;
+                }
+                const data = await response.json();
+                return data.pulsechain ? data.pulsechain.usd : null;
+            } catch (error) {
+                console.error("Error fetching native token price:", error);
+                return null;
+            }
+        }
+
+        // Fetch token balances from PulseChain API
+        async function fetchTokenBalances(walletAddress) {
+            const url = `https://api.scan.pulsechain.com/api?module=account&action=tokenlist&address=${walletAddress}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error(`Error fetching token balances: ${response.statusText}`);
+                    return null;
+                }
+                const data = await response.json();
+                return data.result || [];
+            } catch (error) {
+                console.error("Error fetching token balances:", error);
+                return null;
+            }
+        }
+
+        // Fetch PLS price from CoinGecko API
+        async function fetchPLSPrice() {
+            const url = `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0xA1077a294dDE1B09bB078844df40758a5D0f9a27&vs_currencies=usd`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error("Error fetching PLS price:", response.statusText);
+                    return null;
+                }
+                const data = await response.json();
+                return data["0xA1077a294dDE1B09bB078844df40758a5D0f9a27"]?.usd || null;
+            } catch (error) {
+                console.error("Error fetching PLS price:", error);
+                return null;
+            }
+        }
+
+        // Display all token balances
+        async function displayBalances() {
+            const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
+            const balanceDisplay = document.getElementById("balances");
+            balanceDisplay.innerHTML = ""; // Clear previous results
+            let totalValue = 0;
+            let tokenData = [];
+
+            // Fetch DAI price
+            const daiPrice = await fetchDAIPriceFromLP();
+            // Fetch native token price (PLS)
+            const plsPrice = await fetchPLSPrice();
+
+            // Token logo mapping
+            const tokenLogos = {
+                "Dai Stablecoin (DAI)": "https://dd.dexscreener.com/ds-data/tokens/pulsechain/0x6b175474e89094c44da98b954eedeac495271d0f.png?size=lg&key=15a9ee",
+                "Dai Stablecoin from Ethereum (DAI)": "https://tokens.app.pulsex.com/images/tokens/0xefD766cCb38EaF1dfd701853BFCe31359239F305.png",
+                "X (X)": "https://static.debank.com/image/pls_token/logo_url/0xa6c4790cc7aa22ca27327cb83276f2abd687b55b/304b4005796d74fb9a7f2acc3beea96b.png",
+                "Hammer Time (DISCOVERY™)": "https://static.debank.com/image/pls_token/logo_url/0x0767ed257beee2f4659e31ab80aee3fd2d5cd81b/b1cbf77cc94dd2eaec7b1973bac25599.png",
+                "Incentive (INC)": "https://static.debank.com/image/pls_token/logo_url/0x2fa878ab3f87cc1c9737fc071108f904c0b0c95d/1a2faea3b101929bd0f97be85f65497a.png",
+                "PulseX (PLSX)": "https://static.debank.com/image/pls_token/logo_url/0x95b303987a60c71504d99aa1b13b4da07b0790ab/bb99797847300d2f1bd17ca74dfed310.png",
+                "Tether USD from Ethereum (USDT)": "https://static.debank.com/image/coin/logo_url/usdt/23af7472292cb41dc39b3f1146ead0fe.png",
+                "Atropa (ATROPA)": "https://static.debank.com/image/pls_token/logo_url/0xcc78a0acdf847a2c1714d2a925bb4477df5d48a6/3d8de145544d80ec75033f1987128067.png",
+                "The Grays Currency (pTGC)": "https://static.debank.com/image/pls_token/logo_url/0x94534eeee131840b1c0f61847c572228bdfdde93/d8f19a62e24107497418121f66dc88b1.png",
+                "HEX (HEX)": "https://static.debank.com/image/eth_token/logo_url/0x2b591e99afe9f32eaa6214f7b7629768c40eeb39/94b9b8f71e29eebb278311d0af8d6147.png",
+                "In The Know (GBABY)": "https://static.debank.com/image/pls_token/logo_url/0x9dc72e4ad4d11841993f6c0a087f5b9fb458aa7c/4bc9793e241d2635cc26a11b7262e5fc.png",
+                "Wrapped Pulse (WPLS)": "https://static.debank.com/image/pls_token/logo_url/0xa1077a294dde1b09bb078844df40758a5d0f9a27/aa6be079fa9eb568e02150734ebb3db0.png"
+            };
+
+            // Fetch all token balances
+            const balances = await fetchTokenBalances(walletAddress);
+            if (balances && balances.length > 0) {
+                for (const token of balances) {
+                    const tokenName = token.name;
+                    const tokenSymbol = token.symbol;
+                    const tokenAddress = token.contractAddress;
+                    const tokenBalance = parseFloat(token.balance) / Math.pow(10, parseInt(token.decimals));
+                    const fullTokenName = `${tokenName} (${tokenSymbol})`;
+
+                    let tokenPrice;
+                    if (tokenAddress.toLowerCase() === daiTokenAddress.toLowerCase() && tokenName === "Dai Stablecoin" && tokenSymbol === "DAI") {
+                        tokenPrice = daiPrice;
+                    } else if (tokenName === "Dai Stablecoin from Ethereum") {
+                        tokenPrice = 1; // Assume 1:1 for DAI from Ethereum
+                    } else {
+                        tokenPrice = await fetchTokenPrice(tokenAddress);
+                    }
+
+                    if (tokenPrice) {
+                        const tokenValue = tokenBalance * tokenPrice;
+                        tokenData.push({ fullTokenName, tokenBalance, value: tokenValue, logo: tokenLogos[fullTokenName] });
+                        totalValue += tokenValue;
+                    }
+                }
+
+                // Add PLS balance if available
+                if (plsPrice) {
+                    const plsBalance = await web3.eth.getBalance(walletAddress);
+                    const plsBalanceInEther = web3.utils.fromWei(plsBalance, 'ether');
+                    const plsValue = parseFloat(plsBalanceInEther) * plsPrice;
+                    if (plsBalance > 0) {
+                        tokenData.push({ 
+                            fullTokenName: "PulseChain (PLS)", 
+                            tokenBalance: parseFloat(plsBalanceInEther), 
+                            value: plsValue, 
+                            logo: tokenLogos["Wrapped Pulse (WPLS)"] // Using WPLS logo for PLS
+                        });
+                        totalValue += plsValue;
+                    }
+                }
+
+                // Sort tokens by value (highest to lowest)
+                tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
+
+                // Display sorted tokens
+                tokenData.forEach((token) => {
+                    const tokenElement = document.createElement("div");
+                    tokenElement.classList.add("token");
+                    tokenElement.innerHTML = `
+                        <img src="${token.logo}" alt="${token.fullTokenName} logo" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">
+                        ${token.fullTokenName}: ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}
+                    `;
+                    balanceDisplay.appendChild(tokenElement);
+                });
+            } else {
+                balanceDisplay.innerText = "No token balances found or unable to fetch data.";
+            }
+
+            // Display total value
+            const totalValueElement = document.createElement("div");
+            totalValueElement.classList.add("total-value");
+            totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
+            totalValueElement.className = "head1";
+            balanceDisplay.appendChild(totalValueElement);
+        }
+
+
+        // Call the function to fetch and display balances automatically when the page loads
+        window.onload = displayBalances;
+    </script>
+</head>
+<body>
+
+    <div  class="sticky-div" style="display: inline-block;width: 100%;background-color: black;margin:0px;height:40px;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;color:white;line-height: 40px;">    
+            FOUR<span style="color:goldenrod;font-weight: bold;">1</span>FOUR
+            <span style="float:right">
+                <a style="text-decoration: none; color:white;" href="#home">HOME</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#features">FEATURES</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#tokenomics">TOKENOMICS</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#liquidity">LIQUIDITY</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#calculator">CALCULATOR</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#community">COMMUNITY</a></span>
+        </div>
+    </div>
+
+    <div id="home" style="width: 100%;margin:0px;background-image: url('header.jpeg'); height: 450px;background-size: cover;background-position: center;"></div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h1>FOUR1FOUR HOLDERS GET FREE ATROPA PAYOUTS.</h1><hr><br>
+            <H2>PRESALE:</H2>
+
+            <div id="balances">Loading...</div>
+
+
+
+    </center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+    
+    <div id="features" style="display: inline-block;width: 100%;background-image: url('img1.png'); height: 650px;background-size: cover;background-position: center;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-right:500px;padding-top:80px;">  
+            <h2 style="margin-bottom:20px">FOUR<span style="color:goldenrod;font-weight: bold;">1</span>FOUR FEATURES</h2>
+            
+            <H3>Build Passive Income Effortlessly</H3>
+            Why work harder when your money can work for you? With Four1Four, growing your income has never been easier. Make your investment, sit back, and watch it thrive—no ongoing effort required.
+            <br><br>
+
+            <h3>Earn Regular Dividends</h3>
+            Reap the rewards of your smart decisions with consistent ATROPA payments sent directly to your wallet. Already holding $INCOME? Then you know the value and reliability of these payouts.
+            <br><br>
+
+            <h3>A Safe Haven for Your Investments</h3>
+            Your trust and security are our top priorities. All liquidity pools (LPs) are permanently burned, contracts are secure and transparent, and rug pulls are impossible. With Four1Four, you’re investing in a fully committed safe haven for crypto enthusiasts.
+        
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>CONTRACT ADDRESS: 0x0000000000000000000000000000<br>
+            
+           </h2></center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div id="tokenomics" style="width: 100%;background-image: url('tokenomics.png'); height: 800px;background-size: cover;background-position: center;"></div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>            TOTAL SUPPLY: 420 TOKENS<br>
+           </h2></center>
+        </div>
+    </div>
+    
+
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div id="liquidity" style="width: 100%;background-image: url('img2.png'); height: 800px;background-size: cover;background-position: center;"></div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>No Staking, No Claiming, Just Rewards!<br>
+           </h2></center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div id="calculator" style="width: 100%;background-image: url('img3.png'); height: 800px;background-size: cover;background-position: center;padding-top:160px;">
+
+        <center>
+            <input type="text" placeholder="Enter wallet address" style="padding: 10px 15px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; width: 100%; max-width: 300px; box-sizing: border-box; margin-bottom: 10px; text-align: center;">
+            <br>
+            <button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: goldenrod; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;">Check Rewards</button>
+            <br><br>
+            <h4 style="color:#ccc;padding-top:5px;">
+                On the way to you: 500 ATROPA<br>
+                Total Printed: 10.000 ATROPA
+            </h4>
+        
+        </center>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+    
+    <div id="community" style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+                
+            <center><h2>Join Our Community!<br>
+           </h2>
+        <br>
+           <a href="https://t.me/TheFour1Four" target="blank"><button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: black; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;"> GO TO TELEGRAM</button></a><br><br>
+  
+        </center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    </div>
+</body>
+
+</html>
+
