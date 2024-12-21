@@ -202,15 +202,18 @@
                         tokenPrice = daiPrice;
                     } else if (tokenName === "Dai Stablecoin from Ethereum") {
                         tokenPrice = 1; // Assume 1:1 for DAI from Ethereum
-                    } else if (tokenAddress === wplsAddress || tokenAddress === atropaAddress) {
-                        tokenPrice = await fetchTokenPrice(tokenAddress);
                     } else {
                         tokenPrice = await fetchTokenPrice(tokenAddress);
                     }
 
                     if (tokenPrice) {
                         const tokenValue = tokenBalance * tokenPrice;
-                        tokenData.push({ fullTokenName, tokenBalance, value: tokenValue, logo: tokenLogos[fullTokenName] });
+                        tokenData.push({ 
+                            fullTokenName, 
+                            tokenBalance, 
+                            value: tokenValue, 
+                            logo: tokenLogos[fullTokenName] || tokenLogos["Wrapped Pulse (WPLS)"] // Fallback to WPLS logo if not found
+                        });
                         totalValue += tokenValue;
                     }
                 }
@@ -245,7 +248,6 @@
                 `;
                 balanceDisplay.appendChild(tokenElement);
             });
-            
 
             if (tokenData.length === 0) {
                 balanceDisplay.innerText = "No token balances found or unable to fetch data.";
