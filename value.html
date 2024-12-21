@@ -35,118 +35,126 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
     <script>
-   
-   // Fetch PLS (native token) balance from PulseChain
-// Fetch PLS balance
-async function fetchPLSBalance(walletAddress) {
-    try {
-        const balance = await web3.eth.getBalance(walletAddress);
-        const balanceInEther = web3.utils.fromWei(balance, 'ether'); // Convert from Wei to Ether (PLS)
-        console.log(`PLS Balance: ${balanceInEther} PLS`);
-        return parseFloat(balanceInEther); // Return PLS balance
-    } catch (error) {
-        console.error("Error fetching PLS balance:", error);
-        return null;
-    }
-}
+        const wplsAddress = "0xa1077a294dde1b09bb078844df40758a5d0f9a27";
 
-// Modify the displayBalances function to include the PLS balance
-async function displayBalances() {
-    const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
-    const balanceDisplay = document.getElementById("balances");
-    balanceDisplay.innerHTML = ""; // Clear previous results
-    let totalValue = 0;
-    let tokenData = [];
-
-    // Fetch DAI price
-    const daiPrice = await fetchDAIPriceFromLP();
-
-    // Fetch all token balances
-    const balances = await fetchTokenBalances(walletAddress);
-    var counta = 0;
-
-    // Fetch PLS balance
-    const plsBalance = await fetchPLSBalance(walletAddress);
-    if (plsBalance !== null) {
-        tokenData.push({
-            tokenName: "PulseChain",
-            tokenSymbol: "PLS",
-            tokenBalance: plsBalance,
-            value: plsBalance // Assume 1 PLS is 1 USD for simplicity (you can adjust if needed)
-        });
-        totalValue += plsBalance;
-    }
-
-    if (balances && balances.length > 0) {
-        for (const token of balances) {
-            const tokenName = token.name;
-            const tokenSymbol = token.symbol;
-            const tokenAddress = token.contractAddress;
-            const tokenBalance = parseFloat(token.balance) / Math.pow(10, parseInt(token.decimals));
-
-            if (
-                tokenAddress.toLowerCase() === daiTokenAddress.toLowerCase() &&
-                tokenName === "Dai Stablecoin" &&
-                tokenSymbol === "DAI" &&
-                daiPrice
-            ) {
-                // Special handling for DAI
-                const daiValue = tokenBalance * daiPrice;
-                tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: daiValue });
-                totalValue += daiValue;
-                counta += 1;
-            } else if (
-                tokenName === "Dai Stablecoin from Ethereum"
-            ) {
-                // Special handling for DAI from Ethereum (valued at $1)
-                const daiValue = tokenBalance * 1;
-                tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: daiValue });
-                totalValue += daiValue;
-                counta += 1;
-            } else {
-                // Fetch price for other tokens
-                const tokenPrice = await fetchTokenPrice(tokenAddress);
-                if (tokenPrice) {
-                    const tokenValue = tokenBalance * tokenPrice;
-                    tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: tokenValue });
-                    totalValue += tokenValue;
-                }
+        // Fetch PLS (native token) balance from PulseChain
+        // Fetch PLS balance
+        async function fetchPLSBalance(walletAddress) {
+            try {
+                const balance = await web3.eth.getBalance(walletAddress);
+                const balanceInEther = web3.utils.fromWei(balance, 'ether'); // Convert from Wei to Ether (PLS)
+                console.log(`PLS Balance: ${balanceInEther} PLS`);
+                return parseFloat(balanceInEther); // Return PLS balance
+            } catch (error) {
+                console.error("Error fetching PLS balance:", error);
+                return null;
             }
         }
 
-        // Sort tokens by value (highest to lowest) and filter out those under $10
-        tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
+        async function fetchTokenBalances(walletAddress) {
+            const timestamp = Date.now();
+            const url = `https://api.scan.pulsechain.com/api?module=account&action=tokenlist&address=${walletAddress}&timestamp=${timestamp}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data.result || [];
+            } catch (error) {
+                console.error("Error fetching token balances:", error);
+                return null;
+            }
+        }
 
-        // Display sorted tokens
-        tokenData.forEach((token) => {
-            const tokenElement = document.createElement("div");
-            tokenElement.classList.add("token");
-            tokenElement.innerText = `${token.tokenName} (${token.tokenSymbol}): ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}`;
-            balanceDisplay.appendChild(tokenElement);
-        });
-    } else {
-        balanceDisplay.innerText = "No token balances found or unable to fetch data.";
-    }
+        // Modify the displayBalances function to include the PLS balance
+        async function displayBalances() {
+            const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
+            const balanceDisplay = document.getElementById("balances");
+            balanceDisplay.innerHTML = ""; // Clear previous results
+            let totalValue = 0;
+            let tokenData = [];
 
-    // Display total value
-    const totalValueElement = document.createElement("div");
-    totalValueElement.classList.add("total-value");
-    totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
-    totalValueElement.className = "head1";
-    balanceDisplay.appendChild(totalValueElement);
-}
+            // Fetch DAI price
+            const daiPrice = await fetchDAIPriceFromLP();
+
+            // Fetch all token balances
+            const balances = await fetchTokenBalances(walletAddress);
+            var counta = 0;
+
+            // Fetch PLS balance
+            const plsBalance = await fetchPLSBalance(walletAddress);
+            if (plsBalance !== null) {
+                const plsPrice = await fetchTokenPrice(wplsAddress); // Use WPLS price for PLS
+                if (plsPrice) {
+                    const plsValue = plsBalance * plsPrice;
+                    tokenData.push({
+                        tokenName: "PulseChain",
+                        tokenSymbol: "PLS",
+                        tokenBalance: plsBalance,
+                        value: plsValue
+                    });
+                    totalValue += plsValue;
+                }
+            }
+
+            if (balances && balances.length > 0) {
+                for (const token of balances) {
+                    const tokenName = token.name;
+                    const tokenSymbol = token.symbol;
+                    const tokenAddress = token.contractAddress.toLowerCase();
+                    const tokenBalance = parseFloat(token.balance) / Math.pow(10, parseInt(token.decimals));
+
+                    let tokenPrice;
+                    if (tokenAddress === daiTokenAddress.toLowerCase() && tokenName === "Dai Stablecoin" && tokenSymbol === "DAI") {
+                        tokenPrice = daiPrice;
+                    } else if (tokenName === "Dai Stablecoin from Ethereum") {
+                        tokenPrice = 1;
+                    } else {
+                        tokenPrice = await fetchTokenPrice(tokenAddress);
+                    }
+
+                    if (tokenPrice) {
+                        const tokenValue = tokenBalance * tokenPrice;
+                        tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: tokenValue });
+                        totalValue += tokenValue;
+                    }
+                }
+            } else {
+                balanceDisplay.innerText = "No token balances found or unable to fetch data.";
+            }
+
+            // Sort tokens by value (highest to lowest) and filter out those under $10
+            tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
+
+            // Display sorted tokens
+            tokenData.forEach((token) => {
+                const tokenElement = document.createElement("div");
+                tokenElement.classList.add("token");
+                tokenElement.innerText = `${token.tokenName} (${token.tokenSymbol}): ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}`;
+                balanceDisplay.appendChild(tokenElement);
+            });
+
+            // Display total value
+            const totalValueElement = document.createElement("div");
+            totalValueElement.classList.add("total-value");
+            totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
+            totalValueElement.className = "head1";
+            balanceDisplay.appendChild(totalValueElement);
+        }
 
 
-// Call the function to fetch and display balances automatically when the page loads
-window.onload = displayBalances;
+        // Call the function to fetch and display balances automatically when the page loads
+        window.onload = displayBalances;
 
 
     </script>
 </head>
 
 <body>
-    
+
     <div id="balances">Loading...</div>
 </body>
 
 </html>
+
