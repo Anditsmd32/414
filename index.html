@@ -1,55 +1,389 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Een basis HTML-pagina">
-    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
-
+    <meta name="description" content="FOUR1FOUR - Passive Income and Free Atropa Payouts">
     <title>FOUR1FOUR</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-        html {
-            font-family: "Poppins", sans-serif;
-            font-weight: 400;
-            font-style: normal;
-            scroll-behavior: smooth;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: goldenrod;
+            --text-color: #ffffff;
+            --background-color: #000000;
+            --section-padding: 2rem;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        .sticky-div {
-            position: sticky;
-            top: 0;
-            z-index: 10;
+
+        html {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            scroll-behavior: smooth;
         }
 
-        h1 {
+        body {
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--background-color);
+            padding: 1rem 0;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+
+        .bar {
+            display: block;
+            width: 25px;
+            height: 3px;
+            margin: 5px auto;
+            transition: all 0.3s ease-in-out;
+            background-color: var(--text-color);
+        }
+
+        section {
+            padding: var(--section-padding) 0;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+        }
+
+        .hero {
+            background-image: url('header.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
         }
 
+        .hero-content {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .presale {
+            background-color: #1a1a1a;
+        }
+
         #balances {
-            margin-top: 20px;
-            font-size: 16px;
+            margin-top: 1rem;
         }
 
         .token {
-            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .token img {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
         }
 
         .total-value {
-            font-weight: bold;
-            margin-top: 20px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 1rem;
         }
 
-        .head1,#head1 {
-            font-size: 28px;
-            font-weight: bold;
+        .how-to-participate {
+            background-color: #bbccd1;
+            color: #333;
+        }
+
+        .features {
+            background-image: url('img1.png');
+            background-size: cover;
+            background-position: center;
+            color: var(--text-color);
+        }
+
+        .features-content {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+
+        .tokenomics {
+            background-image: url('tokenomics.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .liquidity {
+            background-image: url('img2.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .atropa-printer {
+            background-image: url('img3.png');
+            background-size: cover;
+            background-position: center;
+            padding: var(--section-padding) 0;
+        }
+
+        .atropa-printer input,
+        .atropa-printer button {
+            width: 100%;
+            max-width: 300px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+        }
+
+        .atropa-printer button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .atropa-printer button:hover {
+            background-color: #d4af37;
+        }
+
+        .videos iframe {
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+        }
+
+        .community button {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .community button:hover {
+            background-color: #d4af37;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--background-color);
+                padding: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .hamburger.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active .bar:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .hamburger.active .bar:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features-content {
+                padding: 1rem;
+            }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+</head>
+<body>
+    <nav class="sticky-nav">
+        <div class="container nav-content">
+            <div class="logo">FOUR<span style="color:var(--primary-color);font-weight:bold;">1</span>FOUR</div>
+            <div class="nav-links">
+                <a href="#home">HOME</a>
+                <a href="#features">FEATURES</a>
+                <a href="#tokenomics">TOKENOMICS</a>
+                <a href="#liquidity">LIQUIDITY</a>
+                <a href="#atropa-printer">ATROPA PRINTER</a>
+                <a href="#videos">VIDEOS</a>
+                <a href="#community">COMMUNITY</a>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>FOUR1FOUR HOLDERS GET FREE ATROPA PAYOUTS</h1>
+            <p>Join the revolution in passive income generation</p>
+        </div>
+    </section>
+
+    <section id="presale" class="presale">
+        <div class="container">
+            <h2>PRESALE</h2>
+            <div id="balances">Loading...</div>
+        </div>
+    </section>
+
+    <section id="how-to-participate" class="how-to-participate">
+        <div class="container">
+            <h2>How to participate in the Four1Four presale?</h2>
+            <p>Send your tokens to the following address to join the presale:</p>
+            <p style="font-weight: bold;color: var(--primary-color);">0xe101c45cb2352059139205177e29d16184db513b</p>
+            <h3>Accepted Tokens:</h3>
+            <ul>
+                <li>eDAI (DAI from Ethereum on Pulsechain)</li>
+                <li>pDAI (Forked Copy)</li>
+                <li>RH Core Tokens</li>
+                <li>414 Core Tokens (except illiquid 666 tokens)</li>
+                <li>X, PTGC, UFO</li>
+                <li>Any Stablecoin on Pulsechain</li>
+            </ul>
+            <p>You can ask in the Telegram group if you're unsure if your token will be accepted</p>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="features-content">
+                <h2>FOUR<span style="color:var(--primary-color);font-weight:bold;">1</span>FOUR FEATURES</h2>
+                <h3>Build Passive Income Effortlessly</h3>
+                <p>Why work harder when your money can work for you? With Four1Four, growing your income has never been easier. Make your investment, sit back, and watch it thrive—no ongoing effort required.</p>
+                <h3>Earn Regular Dividends</h3>
+                <p>Reap the rewards of your smart decisions with consistent ATROPA payments sent directly to your wallet. Already holding $INCOME? Then you know the value and reliability of these payouts.</p>
+                <h3>A Safe Haven for Your Investments</h3>
+                <p>Your trust and security are our top priorities. All liquidity pools (LPs) are permanently burned, contracts are secure and transparent, and rug pulls are impossible. With Four1Four, you're investing in a fully committed safe haven for crypto enthusiasts.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="contract-address">
+        <div class="container">
+            <h2>CONTRACT ADDRESS: TBC</h2>
+        </div>
+    </section>
+
+    <section id="tokenomics" class="tokenomics">
+        <div class="container">
+            <h2>TOTAL SUPPLY: 414 TOKENS</h2>
+        </div>
+    </section>
+
+    <section id="liquidity" class="liquidity">
+        <div class="container">
+            <h2>No Staking, No Claiming, Just Rewards!</h2>
+        </div>
+    </section>
+
+    <section id="atropa-printer" class="atropa-printer">
+        <div class="container">
+            <input type="text" placeholder="Enter wallet address">
+            <button>Print Atropa</button>
+            <p>Atropa being printed: 500 ATROPA</p>
+            <p>Total Atropa printed: 10,000 ATROPA</p>
+        </div>
+    </section>
+
+    <section id="videos" class="videos">
+        <div class="container">
+            <h2>Videos about the Four1Four project:</h2>
+            <iframe src="https://www.youtube.com/embed/-mzNWNzv11U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/OAUo7xAnAXI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </section>
+
+    <section id="community" class="community">
+        <div class="container">
+            <h2>Join Our Community!</h2>
+            <a href="https://t.me/TheFour1Four" target="_blank">
+                <button>GO TO TELEGRAM</button>
+            </a>
+        </div>
+    </section>
+
     <script>
         // Initialize Web3
         const web3 = new Web3("https://rpc.pulsechain.com");
@@ -244,8 +578,8 @@
                 const tokenElement = document.createElement("div");
                 tokenElement.classList.add("token");
                 tokenElement.innerHTML = `
-                    <img src="${token.logo}" alt="${token.fullTokenName} logo" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">
-                    ${token.fullTokenName}: ${token.tokenBalance.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4})} = <span style="color: goldenrod;">$${token.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    <img src="${token.logo}" alt="${token.fullTokenName} logo">
+                    <span>${token.fullTokenName}: ${token.tokenBalance.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4})} = <span style="color: var(--primary-color);">$${token.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></span>
                 `;
                 balanceDisplay.appendChild(tokenElement);
             });
@@ -257,173 +591,27 @@
             // Display total value
             const totalValueElement = document.createElement("div");
             totalValueElement.classList.add("total-value");
-            totalValueElement.innerText = `Total Value: `;
-            totalValueElement.innerHTML += `<span style="color: goldenrod;">$${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
-            totalValueElement.className = "head1";
+            totalValueElement.innerHTML = `Total Value: <span style="color: var(--primary-color);">$${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
             balanceDisplay.appendChild(totalValueElement);
         }
 
         // Call the function to fetch and display balances automatically when the page loads
         window.onload = displayBalances;
+
+        // Mobile menu toggle
+        const hamburger = document.querySelector(".hamburger");
+        const navLinks = document.querySelector(".nav-links");
+
+        hamburger.addEventListener("click", () => {
+            hamburger.classList.toggle("active");
+            navLinks.classList.toggle("active");
+        });
+
+        document.querySelectorAll(".nav-links a").forEach(n => n.addEventListener("click", () => {
+            hamburger.classList.remove("active");
+            navLinks.classList.remove("active");
+        }));
     </script>
-</head>
-<body>
-    <div class="sticky-div" style="display: inline-block;width: 100%;background-color: black;margin:0px;height:40px;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;color:white;line-height: 40px;">    
-            FOUR<span style="color:goldenrod;font-weight: bold;">1</span>FOUR
-            <span style="float:right">
-                <a style="text-decoration: none; color:white;" href="#home">HOME</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
-                <a style="text-decoration: none; color:white;" href="#features">FEATURES</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
-                <a style="text-decoration: none; color:white;" href="#tokenomics">TOKENOMICS</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
-                <a style="text-decoration: none; color:white;" href="#liquidity">LIQUIDITY</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
-                <a style="text-decoration: none; color:white;" href="#atropa-printer">ATROPA PRINTER</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
-                <a style="text-decoration: none; color:white;" href="#videos">VIDEOS</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
-                <a style="text-decoration: none; color:white;" href="#community">COMMUNITY</a></span>
-        </div>
-    </div>
-
-    <div id="home" style="width: 100%;margin:0px;background-image: url('header.jpeg'); height: 450px;background-size: cover;background-position: center;"></div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div style="display: inline-block;width: 100%;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
-                
-            <center><h1>FOUR1FOUR HOLDERS GET FREE ATROPA PAYOUTS.</h1><hr><br>
-            <H2>PRESALE:</H2>
-
-            <div id="balances">Loading...</div>
-
-    </center>
-        </div>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div id="how-to-participate" style="display: inline-block;width: 100%;background-color: #bbccd1;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-top:40px;padding-bottom: 40px;text-align:center;">
-            <h2>How to participate in the Four1Four presale?</h2>
-            <p>Send your tokens to the following address to join the presale:</p>
-            <p style="font-weight: bold;color: goldenrod;">0xe101c45cb2352059139205177e29d16184db513b</p>
-            <h3>Accepted Tokens:</h3>
-            <ul style="list-style-position: inside;padding-left:0;">
-                <li>eDAI (DAI from Ethereum on Pulsechain)</li>
-                <li>pDAI (Forked Copy)</li>
-                <li>RH Core Tokens</li>
-                <li>414 Core Tokens (except illiquid 666 tokens)</li>
-                <li>X, PTGC, UFO</li>
-                <li>Any Stablecoin on Pulsechain</li>
-            </ul>
-            <p>You can ask in the Telegram group if you're unsure if your token will be accepted</p>
-        </div>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-    
-    <div id="features" style="display: inline-block;width: 100%;background-image: url('img1.png'); height: 650px;background-size: cover;background-position: center;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-right:500px;padding-top:80px;">  
-            <h2 style="margin-bottom:20px">FOUR<span style="color:goldenrod;font-weight: bold;">1</span>FOUR FEATURES</h2>
-            
-            <H3>Build Passive Income Effortlessly</H3>
-            Why work harder when your money can work for you? With Four1Four, growing your income has never been easier. Make your investment, sit back, and watch it thrive—no ongoing effort required.
-            <br><br>
-
-            <h3>Earn Regular Dividends</h3>
-            Reap the rewards of your smart decisions with consistent ATROPA payments sent directly to your wallet. Already holding $INCOME? Then you know the value and reliability of these payouts.
-            <br><br>
-
-            <h3>A Safe Haven for Your Investments</h3>
-            Your trust and security are our top priorities. All liquidity pools (LPs) are permanently burned, contracts are secure and transparent, and rug pulls are impossible. With Four1Four, you're investing in a fully committed safe haven for crypto enthusiasts.
-        
-        </div>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div style="display: inline-block;width: 100%;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
-                
-            <center><h2>CONTRACT ADDRESS: TBC<br>
-            
-           </h2></center>
-        </div>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div id="tokenomics" style="width: 100%;background-image: url('tokenomics.png'); height: 800px;background-size: cover;background-position: center;"></div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div style="display: inline-block;width: 100%;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
-                
-            <center><h2>TOTAL SUPPLY: 414 TOKENS<br>
-           </h2></center>
-        </div>
-    </div>
-    
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div id="liquidity" style="width: 100%;background-image: url('img2.png'); height: 800px;background-size: cover;background-position: center;"></div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div style="display: inline-block;width: 100%;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
-                
-            <center><h2>No Staking, No Claiming, Just Rewards!<br>
-           </h2></center>
-        </div>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div id="atropa-printer" style="width: 100%;background-image: url('img3.png'); height: 800px;background-size: cover;background-position: center;padding-top:160px;">
-        <center>
-            <h2 style="color: #fff; margin-bottom: 20px;"></h2>
-            <input type="text" placeholder="Enter wallet address" style="padding: 10px 15px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; width: 100%; max-width: 300px; box-sizing: border-box; margin-bottom: 10px; text-align: center;">
-            <br>
-            <button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: goldenrod; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;">Print Atropa</button>
-            <br><br>
-            <h4 style="color:#ccc;padding-top:5px;">
-                Atropa being printed: 500 ATROPA<br>
-                Total Atropa printed: 10,000 ATROPA
-            </h4>
-        </center>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    <div id="videos" style="display: inline-block;width: 100%;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
-            <center>
-                <h2>Videos about the Four1Four project:</h2>
-                <br>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/-mzNWNzv11U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                <br><br>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/OAUo7xAnAXI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </center>
-        </div>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-    
-    <div id="community" style="display: inline-block;width: 100%;">
-        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
-                
-            <center><h2>Join Our Community!<br>
-           </h2>
-        <br>
-           <a href="https://t.me/TheFour1Four" target="blank"><button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: black; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;"> GO TO TELEGRAM</button></a><br><br>
-  
-        </center>
-        </div>
-    </div>
-
-    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
-
-    </div>
 </body>
 </html>
 
