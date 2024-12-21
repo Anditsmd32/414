@@ -173,10 +173,10 @@
 
             // Token logo mapping
             const tokenLogos = {
-                "DAI Stablecoin": "https://static.debank.com/image/pls_token/logo_url/0x6b175474e89094c44da98b954eedeac495271d0f/6b2caf7d28f665f3685fe937688e904f.png",
+                "DAI Stablecoin": "https://static.debank.com/image/eth_token/logo_url/0x6b175474e89094c44da98b954eedeac495271d0f/6b2caf7d28f665f3685fe937688e904f.png",
                 "X": "https://static.debank.com/image/pls_token/logo_url/0xa6c4790cc7aa22ca27327cb83276f2abd687b55b/304b4005796d74fb9a7f2acc3beea96b.png",
                 "Hammer Time": "https://static.debank.com/image/pls_token/logo_url/0x0767ed257beee2f4659e31ab80aee3fd2d5cd81b/b1cbf77cc94dd2eaec7b1973bac25599.png",
-                "DAI Stablecoin from Ethereum": "https://static.debank.com/image/ckb_token/logo_url/0x317f8d18fb16e49a958becd0ea72f8e153d25654/61b18dee6896c6dab0684a78d0eee10a.png",
+                "DAI Stablecoin from Ethereum": "https://static.debank.com/image/eth_token/logo_url/0x6b175474e89094c44da98b954eedeac495271d0f/6b2caf7d28f665f3685fe937688e904f.png",
                 "INCENTIVE": "https://static.debank.com/image/pls_token/logo_url/0x2fa878ab3f87cc1c9737fc071108f904c0b0c95d/1a2faea3b101929bd0f97be85f65497a.png",
                 "PulseX": "https://static.debank.com/image/pls_token/logo_url/0x95b303987a60c71504d99aa1b13b4da07b0790ab/bb99797847300d2f1bd17ca74dfed310.png",
                 "The Grays Currency": "https://static.debank.com/image/pls_token/logo_url/0x94534eeee131840b1c0f61847c572228bdfdde93/d8f19a62e24107497418121f66dc88b1.png",
@@ -244,7 +244,7 @@
                 tokenElement.classList.add("token");
                 tokenElement.innerHTML = `
                     <img src="${token.logo}" alt="${token.fullTokenName} logo" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">
-                    ${token.fullTokenName}: ${token.tokenBalance.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4})} = $${token.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    ${token.fullTokenName}: ${token.tokenBalance.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4})} = <span style="color: goldenrod;">$${token.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                 `;
                 balanceDisplay.appendChild(tokenElement);
             });
@@ -256,7 +256,8 @@
             // Display total value
             const totalValueElement = document.createElement("div");
             totalValueElement.classList.add("total-value");
-            totalValueElement.innerText = `Total Value: $${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            totalValueElement.innerText = `Total Value: `;
+            totalValueElement.innerHTML += `<span style="color: goldenrod;">$${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>`;
             totalValueElement.className = "head1";
             balanceDisplay.appendChild(totalValueElement);
         }
@@ -298,14 +299,14 @@
 
     <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
 
-    <div style="display: inline-block;width: 100%;">
+    <div style="display: inline-block;width: 100%;background-color: black;">
         <div style="width:1100px;margin-left:auto;margin-right:auto;padding-top:40px;padding-bottom: 40px;">
-            <div style="display: flex;">
-                <div style="background-image: url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ARTWORK-FOUR1FOUR60245-Rg3SFPgCvI1MUozcVL4vSNxuFKJOnf.jpeg'); height: 650px; flex: 1; background-size: cover; background-position: center;"></div>
+            <div style="display: flex;align-items: center;">
+                <div style="background-image: url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_5987974990005388352_y-IF5XqJEoH1JVjYO5odLFjZHRD5HsBZ.jpeg'); height: 650px; flex: 1; background-size: cover; background-position: center;"></div>
                 <div style="flex: 1; padding: 25px; text-align: right;">
                     <h2>How to participate in the Four1Four presale?</h2>
                     <p>Send your tokens to the following address to join the presale:</p>
-                    <p style="font-weight: bold;">0xe101c45cb2352059139205177e29d16184db513b</p>
+                    <p style="font-weight: bold;color: goldenrod;">0xe101c45cb2352059139205177e29d16184db513b</p>
                     <h3>Accepted Tokens:</h3>
                     <ul style="list-style-position: inside;">
                         <li>eDAI (DAI from Ethereum on Pulsechain)</li>
