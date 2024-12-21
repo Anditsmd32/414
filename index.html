@@ -173,16 +173,17 @@
 
             // Token logo mapping
             const tokenLogos = {
-                "DAI Stablecoin": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pdailogo-nSzY5iaB0twfGisYc7Z4EsCmVWCAb9.png",
-                "X": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/xlogo-ETOo9JeZ8X3ZeoX7SfCurfcbe13apQ.png",
-                "Hammer Time": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/discoverylogo-1my09cAWD8E5ChwkMbBqMCx1qX2dBU.png",
-                "DAI Stablecoin from Ethereum": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/edailogo-fHpBkJde7NveJZ1FAM3o0YuHj44xxJ.png",
-                "INCENTIVE": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/INClogo-k2oE92haESaOvrzci0UxVTjPBxqzSy.png",
-                "PulseX": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/PLSXlogo-R7iYFTantq0U32414X28D3s3SbAJwu.png",
-                "The Grays Currency": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pTGClogo-Pwy7QtsEcGfiHMT1YCoOUvwijVE9Rz.png",
-                "HEX": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pHEXlogo-d8WaPLgjO1QFzlRqq1Mr3JY68aSUs1.png",
-                "In The Know": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gBABYlogo-gpHLCYuAnSKHmW8FBLQBv66muz6MF9.png",
-                "Princess DAI": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/princessdailogo-i3Gb9PIikGEPhjUQXQVIKKCI9SueMt.png",
+                "DAI Stablecoin": "https://static.debank.com/image/pls_token/logo_url/0x6b175474e89094c44da98b954eedeac495271d0f/6b2caf7d28f665f3685fe937688e904f.png",
+                "X": "https://static.debank.com/image/pls_token/logo_url/0xa6c4790cc7aa22ca27327cb83276f2abd687b55b/304b4005796d74fb9a7f2acc3beea96b.png",
+                "Hammer Time": "https://static.debank.com/image/pls_token/logo_url/0x0767ed257beee2f4659e31ab80aee3fd2d5cd81b/b1cbf77cc94dd2eaec7b1973bac25599.png",
+                "DAI Stablecoin from Ethereum": "https://static.debank.com/image/ckb_token/logo_url/0x317f8d18fb16e49a958becd0ea72f8e153d25654/61b18dee6896c6dab0684a78d0eee10a.png",
+                "INCENTIVE": "https://static.debank.com/image/pls_token/logo_url/0x2fa878ab3f87cc1c9737fc071108f904c0b0c95d/1a2faea3b101929bd0f97be85f65497a.png",
+                "PulseX": "https://static.debank.com/image/pls_token/logo_url/0x95b303987a60c71504d99aa1b13b4da07b0790ab/bb99797847300d2f1bd17ca74dfed310.png",
+                "The Grays Currency": "https://static.debank.com/image/pls_token/logo_url/0x94534eeee131840b1c0f61847c572228bdfdde93/d8f19a62e24107497418121f66dc88b1.png",
+                "HEX": "https://static.debank.com/image/eth_token/logo_url/0x2b591e99afe9f32eaa6214f7b7629768c40eeb39/94b9b8f71e29eebb278311d0af8d6147.png",
+                "In The Know": "https://static.debank.com/image/pls_token/logo_url/0x9dc72e4ad4d11841993f6c0a087f5b9fb458aa7c/4bc9793e241d2635cc26a11b7262e5fc.png",
+                "Tether USD from Ethereum": "https://static.debank.com/image/coin/logo_url/usdt/23af7472292cb41dc39b3f1146ead0fe.png",
+                "Atropa": "https://static.debank.com/image/pls_token/logo_url/0xcc78a0acdf847a2c1714d2a925bb4477df5d48a6/3d8de145544d80ec75033f1987128067.png",
                 "Wrapped Pulse": "https://static.debank.com/image/pls_token/logo_url/0xa1077a294dde1b09bb078844df40758a5d0f9a27/aa6be079fa9eb568e02150734ebb3db0.png"
             };
 
@@ -243,7 +244,7 @@
                 tokenElement.classList.add("token");
                 tokenElement.innerHTML = `
                     <img src="${token.logo}" alt="${token.fullTokenName} logo" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">
-                    ${token.fullTokenName}: ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}
+                    ${token.fullTokenName}: ${token.tokenBalance.toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4})} = $${token.value.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                 `;
                 balanceDisplay.appendChild(tokenElement);
             });
@@ -255,7 +256,7 @@
             // Display total value
             const totalValueElement = document.createElement("div");
             totalValueElement.classList.add("total-value");
-            totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
+            totalValueElement.innerText = `Total Value: $${totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             totalValueElement.className = "head1";
             balanceDisplay.appendChild(totalValueElement);
         }
@@ -273,7 +274,8 @@
                 <a style="text-decoration: none; color:white;" href="#features">FEATURES</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
                 <a style="text-decoration: none; color:white;" href="#tokenomics">TOKENOMICS</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
                 <a style="text-decoration: none; color:white;" href="#liquidity">LIQUIDITY</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
-                <a style="text-decoration: none; color:white;" href="#calculator">CALCULATOR</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#atropa-printer">ATROPA PRINTER</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
+                <a style="text-decoration: none; color:white;" href="#videos">VIDEOS</a><span style="color:goldenrod;word-spacing: 5px;"> | </span>
                 <a style="text-decoration: none; color:white;" href="#community">COMMUNITY</a></span>
         </div>
     </div>
@@ -291,6 +293,26 @@
             <div id="balances">Loading...</div>
 
     </center>
+        </div>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+            <h2>How to participate in the Four1Four presale?</h2>
+            <p>Send your tokens to the following address to join the presale:</p>
+            <p style="font-weight: bold;">0xe101c45cb2352059139205177e29d16184db513b</p>
+            <h3>Accepted Tokens:</h3>
+            <ul>
+                <li>eDAI (DAI from Ethereum on Pulsechain)</li>
+                <li>pDAI (Forked Copy)</li>
+                <li>RH Core Tokens</li>
+                <li>414 Core Tokens (except illiquid 666 tokens)</li>
+                <li>X, PTGC, UFO</li>
+                <li>Any Stablecoin on Pulsechain</li>
+            </ul>
+            <p>You can ask in the Telegram group if you're unsure if your token will be accepted</p>
         </div>
     </div>
 
@@ -319,7 +341,7 @@
     <div style="display: inline-block;width: 100%;">
         <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
                 
-            <center><h2>CONTRACT ADDRESS: 0x0000000000000000000000000000<br>
+            <center><h2>CONTRACT ADDRESS: TBC<br>
             
            </h2></center>
         </div>
@@ -334,7 +356,7 @@
     <div style="display: inline-block;width: 100%;">
         <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
                 
-            <center><h2>            TOTAL SUPPLY: 420 TOKENS<br>
+            <center><h2>TOTAL SUPPLY: 414 TOKENS<br>
            </h2></center>
         </div>
     </div>
@@ -355,19 +377,32 @@
 
     <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
 
-    <div id="calculator" style="width: 100%;background-image: url('img3.png'); height: 800px;background-size: cover;background-position: center;padding-top:160px;">
-
+    <div id="atropa-printer" style="width: 100%;background-image: url('img3.png'); height: 800px;background-size: cover;background-position: center;padding-top:160px;">
         <center>
+            <h2 style="color: #fff; margin-bottom: 20px;">Atropa Printer</h2>
             <input type="text" placeholder="Enter wallet address" style="padding: 10px 15px; font-size: 16px; border: 2px solid #ccc; border-radius: 5px; width: 100%; max-width: 300px; box-sizing: border-box; margin-bottom: 10px; text-align: center;">
             <br>
-            <button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: goldenrod; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;">Check Rewards</button>
+            <button style="padding: 12px 20px; font-size: 16px; color: #fff; background-color: goldenrod; border: none; border-radius: 5px; cursor: pointer; width: 100%; max-width: 320px; box-sizing: border-box; transition: background-color 0.3s ease;">Print Atropa</button>
             <br><br>
             <h4 style="color:#ccc;padding-top:5px;">
-                On the way to you: 500 ATROPA<br>
-                Total Printed: 10.000 ATROPA
+                Atropa being printed: 500 ATROPA<br>
+                Total Atropa printed: 10,000 ATROPA
             </h4>
-        
         </center>
+    </div>
+
+    <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
+
+    <div id="videos" style="display: inline-block;width: 100%;">
+        <div style="width:1100px;margin-left:auto;margin-right:auto;padding-left:25px;padding-top:40px;padding-bottom: 40px;">
+            <center>
+                <h2>Videos about the Four1Four project:</h2>
+                <br>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/-mzNWNzv11U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <br><br>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/OAUo7xAnAXI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </center>
+        </div>
     </div>
 
     <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
