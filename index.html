@@ -5,276 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="FOUR1FOUR - Passive Income and Free Atropa Payouts">
     <title>FOUR1FOUR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        :root {
-            --primary-color: goldenrod;
-            --text-color: #ffffff;
-            --background-color: #000000;
-            --section-padding: 2rem;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        html {
+            font-family: "Poppins", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            scroll-behavior: smooth;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        html {
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-            scroll-behavior: smooth;
-        }
-
-        body {
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        .sticky-nav {
+        .sticky-div {
             position: sticky;
             top: 0;
-            z-index: 1000;
-            background-color: var(--background-color);
-            padding: 1rem 0;
+            z-index: 10;
         }
 
-        .nav-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .nav-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        .hamburger {
-            display: none;
-            cursor: pointer;
-        }
-
-        .bar {
-            display: block;
-            width: 25px;
-            height: 3px;
-            margin: 5px auto;
-            transition: all 0.3s ease-in-out;
-            background-color: var(--text-color);
-        }
-
-        section {
-            padding: var(--section-padding) 0;
-        }
-
-        h1, h2, h3 {
-            margin-bottom: 1rem;
-        }
-
-        .hero {
-            background-image: url('header.jpeg');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        h1 {
             text-align: center;
         }
 
-        .hero-content {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 2rem;
-            border-radius: 10px;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .presale {
-            background-color: #1a1a1a;
-        }
-
         #balances {
-            margin-top: 1rem;
+            margin-top: 20px;
+            font-size: 16px;
         }
 
         .token {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .token img {
-            width: 24px;
-            height: 24px;
-            margin-right: 0.5rem;
+            margin: 10px 0;
         }
 
         .total-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-top: 1rem;
+            font-weight: bold;
+            margin-top: 20px;
         }
 
-        .how-to-participate {
-            background-color: #bbccd1;
-            color: #333;
+        .head1,#head1 {
+            font-size: 28px;
+            font-weight: bold;
         }
 
-        .features {
-            background-image: url('img1.png');
-            background-size: cover;
-            background-position: center;
-            color: var(--text-color);
-        }
-
-        .features-content {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 2rem;
-            border-radius: 10px;
-        }
-
-        .tokenomics {
-            background-image: url('tokenomics.png');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .liquidity {
-            background-image: url('img2.png');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .atropa-printer {
-            background-image: url('img3.png');
-            background-size: cover;
-            background-position: center;
-            padding: var(--section-padding) 0;
-        }
-
-        .atropa-printer input,
-        .atropa-printer button {
-            width: 100%;
-            max-width: 300px;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border-radius: 5px;
-        }
-
-        .atropa-printer button {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .atropa-printer button:hover {
-            background-color: #d4af37;
-        }
-
-        .videos iframe {
-            max-width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9;
-        }
-
-        .community button {
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .community button:hover {
-            background-color: #d4af37;
+        /* Responsive styles */
+        @media (max-width: 1100px) {
+            .sticky-div > div,
+            div[style*="width:1100px"] {
+                width: 100% !important;
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+            }
         }
 
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: var(--background-color);
-                padding: 1rem;
+            .sticky-div > div {
+                font-size: 14px;
             }
 
-            .nav-links.active {
+            .sticky-div span[style*="float:right"] {
+                float: none !important;
                 display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 10px;
             }
 
-            .hamburger {
-                display: block;
+            .sticky-div span[style*="float:right"] a {
+                margin: 5px;
             }
 
-            .hamburger.active .bar:nth-child(2) {
-                opacity: 0;
+            div[style*="padding-right:500px"] {
+                padding-right: 15px !important;
             }
 
-            .hamburger.active .bar:nth-child(1) {
-                transform: translateY(8px) rotate(45deg);
+            iframe {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 16 / 9;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .head1, #head1 {
+                font-size: 24px;
             }
 
-            .hamburger.active .bar:nth-child(3) {
-                transform: translateY(-8px) rotate(-45deg);
+            h2 {
+                font-size: 20px;
             }
 
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .features-content {
-                padding: 1rem;
+            div[style*="height:450px"],
+            div[style*="height:650px"],
+            div[style*="height:800px"] {
+                height: auto !important;
+                min-height: 300px;
             }
         }
     </style>
 </head>
 <body>
-    <nav class="sticky-nav">
+    <nav class="sticky-nav sticky-div">
         <div class="container nav-content">
             <div class="logo">FOUR<span style="color:var(--primary-color);font-weight:bold;">1</span>FOUR</div>
             <div class="nav-links">
@@ -595,8 +427,27 @@
             balanceDisplay.appendChild(totalValueElement);
         }
 
+        // Adjust iframe sizes for mobile
+        function adjustIframeSizes() {
+            const iframes = document.querySelectorAll('iframe');
+            const width = window.innerWidth;
+            iframes.forEach(iframe => {
+                if (width <= 768) {
+                    iframe.width = width - 30;
+                    iframe.height = (width - 30) * 9 / 16;
+                } else {
+                    iframe.width = '560';
+                    iframe.height = '315';
+                }
+            });
+        }
+
         // Call the function to fetch and display balances automatically when the page loads
-        window.onload = displayBalances;
+        window.onload = () => {
+            displayBalances();
+            adjustIframeSizes();
+        };
+        window.addEventListener('resize', adjustIframeSizes);
 
         // Mobile menu toggle
         const hamburger = document.querySelector(".hamburger");
