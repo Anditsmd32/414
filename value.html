@@ -22,15 +22,6 @@
 
         .token {
             margin: 10px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .token img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
         }
 
         .total-value {
@@ -58,21 +49,6 @@ async function fetchPLSBalance(walletAddress) {
         return null;
     }
 }
-
-// Token logo mapping
-const tokenLogos = {
-    "DAI Stablecoin": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pdailogo-nSzY5iaB0twfGisYc7Z4EsCmVWCAb9.png",
-    "X": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/xlogo-ETOo9JeZ8X3ZeoX7SfCurfcbe13apQ.png",
-    "Hammer Time": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/discoverylogo-1my09cAWD8E5ChwkMbBqMCx1qX2dBU.png",
-    "DAI Stablecoin from Ethereum": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/edailogo-fHpBkJde7NveJZ1FAM3o0YuHj44xxJ.png",
-    "INCENTIVE": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/INClogo-k2oE92haESaOvrzci0UxVTjPBxqzSy.png",
-    "PulseX": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/PLSXlogo-R7iYFTantq0U32414X28D3s3SbAJwu.png",
-    "The Grays Currency": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pTGClogo-Pwy7QtsEcGfiHMT1YCoOUvwijVE9Rz.png",
-    "HEX": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pHEXlogo-d8WaPLgjO1QFzlRqq1Mr3JY68aSUs1.png",
-    "In The Know": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gBABYlogo-gpHLCYuAnSKHmW8FBLQBv66muz6MF9.png",
-    "Princess DAI": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/princessdailogo-i3Gb9PIikGEPhjUQXQVIKKCI9SueMt.png",
-    "PulseChain": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/PLSXlogo-R7iYFTantq0U32414X28D3s3SbAJwu.png" // Using PulseX logo as placeholder for PLS
-};
 
 // Modify the displayBalances function to include the PLS balance
 async function displayBalances() {
@@ -145,18 +121,7 @@ async function displayBalances() {
         tokenData.forEach((token) => {
             const tokenElement = document.createElement("div");
             tokenElement.classList.add("token");
-            
-            // Add token logo
-            const logoImg = document.createElement("img");
-            logoImg.src = tokenLogos[token.tokenName] || 'default-logo.png'; // Use a default logo if not found
-            logoImg.alt = `${token.tokenName} logo`;
-            logoImg.onerror = function() { this.style.display = 'none'; }; // Hide image if it fails to load
-            tokenElement.appendChild(logoImg);
-            
-            const tokenText = document.createElement("span");
-            tokenText.innerText = `${token.tokenName} (${token.tokenSymbol}): ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}`;
-            tokenElement.appendChild(tokenText);
-            
+            tokenElement.innerText = `${token.tokenName} (${token.tokenSymbol}): ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}`;
             balanceDisplay.appendChild(tokenElement);
         });
     } else {
@@ -171,8 +136,10 @@ async function displayBalances() {
     balanceDisplay.appendChild(totalValueElement);
 }
 
+
 // Call the function to fetch and display balances automatically when the page loads
 window.onload = displayBalances;
+
 
     </script>
 </head>
@@ -183,4 +150,3 @@ window.onload = displayBalances;
 </body>
 
 </html>
-
