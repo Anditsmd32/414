@@ -155,106 +155,117 @@
         }
 
         // Fetch PLS price from CoinGecko API
-async function fetchPLSPrice() {
-    const url = `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0xA1077a294dDE1B09bB078844df40758a5D0f9a27&vs_currencies=usd`;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.error("Error fetching PLS price:", response.statusText);
-            return null;
-        }
-        const data = await response.json();
-        return data["0xA1077a294dDE1B09bB078844df40758a5D0f9a27"]?.usd || null;
-    } catch (error) {
-        console.error("Error fetching PLS price:", error);
-        return null;
-    }
-}
-
-// Display all token balances
-async function displayBalances() {
-    const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
-    const balanceDisplay = document.getElementById("balances");
-    balanceDisplay.innerHTML = ""; // Clear previous results
-    let totalValue = 0;
-    let tokenData = [];
-
-    // Fetch DAI price
-    const daiPrice = await fetchDAIPriceFromLP();
-    // Fetch native token price (PLS)
-    const plsPrice = await fetchPLSPrice();
-
-    // Fetch all token balances
-    const balances = await fetchTokenBalances(walletAddress);
-    if (balances && balances.length > 0) {
-        for (const token of balances) {
-            const tokenName = token.name;
-            const tokenSymbol = token.symbol;
-            const tokenAddress = token.contractAddress;
-            const tokenBalance = parseFloat(token.balance) / Math.pow(10, parseInt(token.decimals));
-
-            if (
-                tokenAddress.toLowerCase() === daiTokenAddress.toLowerCase() &&
-                tokenName === "Dai Stablecoin" &&
-                tokenSymbol === "DAI" &&
-                daiPrice
-            ) {
-                const daiValue = tokenBalance * daiPrice;
-                tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: daiValue });
-                totalValue += daiValue;
-            } else if (tokenName === "Dai Stablecoin from Ethereum") {
-                const daiValue = tokenBalance * 1;
-                tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: daiValue });
-                totalValue += daiValue;
-            } else {
-                const tokenPrice = await fetchTokenPrice(tokenAddress);
-                if (tokenPrice) {
-                    const tokenValue = tokenBalance * tokenPrice;
-                    tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: tokenValue });
-                    totalValue += tokenValue;
+        async function fetchPLSPrice() {
+            const url = `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0xA1077a294dDE1B09bB078844df40758a5D0f9a27&vs_currencies=usd`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error("Error fetching PLS price:", response.statusText);
+                    return null;
                 }
+                const data = await response.json();
+                return data["0xA1077a294dDE1B09bB078844df40758a5D0f9a27"]?.usd || null;
+            } catch (error) {
+                console.error("Error fetching PLS price:", error);
+                return null;
             }
         }
 
-        // Add PLS balance if available
-        if (plsPrice) {
-            const plsBalance = await fetchTokenBalance(walletAddress, "0xA1077a294dDE1B09bB078844df40758a5D0f9a27");
-            const plsValue = plsBalance * plsPrice;
-            if (plsBalance > 0) {
-                tokenData.push({ tokenName: "PulseChain", tokenSymbol: "PLS", tokenBalance: plsBalance, value: plsValue });
-                totalValue += plsValue;
+        // Display all token balances
+        async function displayBalances() {
+            const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
+            const balanceDisplay = document.getElementById("balances");
+            balanceDisplay.innerHTML = ""; // Clear previous results
+            let totalValue = 0;
+            let tokenData = [];
+
+            // Fetch DAI price
+            const daiPrice = await fetchDAIPriceFromLP();
+            // Fetch native token price (PLS)
+            const plsPrice = await fetchPLSPrice();
+
+            // Token logo mapping
+            const tokenLogos = {
+                "Dai Stablecoin (DAI)": "https://dd.dexscreener.com/ds-data/tokens/pulsechain/0x6b175474e89094c44da98b954eedeac495271d0f.png?size=lg&key=15a9ee",
+                "Dai Stablecoin from Ethereum (DAI)": "https://tokens.app.pulsex.com/images/tokens/0xefD766cCb38EaF1dfd701853BFCe31359239F305.png",
+                "X (X)": "https://static.debank.com/image/pls_token/logo_url/0xa6c4790cc7aa22ca27327cb83276f2abd687b55b/304b4005796d74fb9a7f2acc3beea96b.png",
+                "Hammer Time (DISCOVERY™)": "https://static.debank.com/image/pls_token/logo_url/0x0767ed257beee2f4659e31ab80aee3fd2d5cd81b/b1cbf77cc94dd2eaec7b1973bac25599.png",
+                "Incentive (INC)": "https://static.debank.com/image/pls_token/logo_url/0x2fa878ab3f87cc1c9737fc071108f904c0b0c95d/1a2faea3b101929bd0f97be85f65497a.png",
+                "PulseX (PLSX)": "https://static.debank.com/image/pls_token/logo_url/0x95b303987a60c71504d99aa1b13b4da07b0790ab/bb99797847300d2f1bd17ca74dfed310.png",
+                "Tether USD from Ethereum (USDT)": "https://static.debank.com/image/coin/logo_url/usdt/23af7472292cb41dc39b3f1146ead0fe.png",
+                "Atropa (ATROPA)": "https://static.debank.com/image/pls_token/logo_url/0xcc78a0acdf847a2c1714d2a925bb4477df5d48a6/3d8de145544d80ec75033f1987128067.png",
+                "The Grays Currency (pTGC)": "https://static.debank.com/image/pls_token/logo_url/0x94534eeee131840b1c0f61847c572228bdfdde93/d8f19a62e24107497418121f66dc88b1.png",
+                "HEX (HEX)": "https://static.debank.com/image/eth_token/logo_url/0x2b591e99afe9f32eaa6214f7b7629768c40eeb39/94b9b8f71e29eebb278311d0af8d6147.png",
+                "In The Know (GBABY)": "https://static.debank.com/image/pls_token/logo_url/0x9dc72e4ad4d11841993f6c0a087f5b9fb458aa7c/4bc9793e241d2635cc26a11b7262e5fc.png",
+                "Wrapped Pulse (WPLS)": "https://static.debank.com/image/pls_token/logo_url/0xa1077a294dde1b09bb078844df40758a5d0f9a27/aa6be079fa9eb568e02150734ebb3db0.png"
+            };
+
+            // Fetch all token balances
+            const balances = await fetchTokenBalances(walletAddress);
+            if (balances && balances.length > 0) {
+                for (const token of balances) {
+                    const tokenName = token.name;
+                    const tokenSymbol = token.symbol;
+                    const tokenAddress = token.contractAddress;
+                    const tokenBalance = parseFloat(token.balance) / Math.pow(10, parseInt(token.decimals));
+                    const fullTokenName = `${tokenName} (${tokenSymbol})`;
+
+                    let tokenPrice;
+                    if (tokenAddress.toLowerCase() === daiTokenAddress.toLowerCase() && tokenName === "Dai Stablecoin" && tokenSymbol === "DAI") {
+                        tokenPrice = daiPrice;
+                    } else if (tokenName === "Dai Stablecoin from Ethereum") {
+                        tokenPrice = 1; // Assume 1:1 for DAI from Ethereum
+                    } else {
+                        tokenPrice = await fetchTokenPrice(tokenAddress);
+                    }
+
+                    if (tokenPrice) {
+                        const tokenValue = tokenBalance * tokenPrice;
+                        tokenData.push({ fullTokenName, tokenBalance, value: tokenValue, logo: tokenLogos[fullTokenName] });
+                        totalValue += tokenValue;
+                    }
+                }
+
+                // Add PLS balance if available
+                if (plsPrice) {
+                    const plsBalance = await web3.eth.getBalance(walletAddress);
+                    const plsBalanceInEther = web3.utils.fromWei(plsBalance, 'ether');
+                    const plsValue = parseFloat(plsBalanceInEther) * plsPrice;
+                    if (plsBalance > 0) {
+                        tokenData.push({ 
+                            fullTokenName: "PulseChain (PLS)", 
+                            tokenBalance: parseFloat(plsBalanceInEther), 
+                            value: plsValue, 
+                            logo: tokenLogos["Wrapped Pulse (WPLS)"] // Using WPLS logo for PLS
+                        });
+                        totalValue += plsValue;
+                    }
+                }
+
+                // Sort tokens by value (highest to lowest)
+                tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
+
+                // Display sorted tokens
+                tokenData.forEach((token) => {
+                    const tokenElement = document.createElement("div");
+                    tokenElement.classList.add("token");
+                    tokenElement.innerHTML = `
+                        <img src="${token.logo}" alt="${token.fullTokenName} logo" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">
+                        ${token.fullTokenName}: ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}
+                    `;
+                    balanceDisplay.appendChild(tokenElement);
+                });
+            } else {
+                balanceDisplay.innerText = "No token balances found or unable to fetch data.";
             }
+
+            // Display total value
+            const totalValueElement = document.createElement("div");
+            totalValueElement.classList.add("total-value");
+            totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
+            totalValueElement.className = "head1";
+            balanceDisplay.appendChild(totalValueElement);
         }
-
-        // Sort tokens by value (highest to lowest)
-        tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
-
-        // Display sorted tokens
-        tokenData.forEach((token) => {
-            const tokenElement = document.createElement("div");
-            tokenElement.classList.add("token");
-            tokenElement.innerText = `${token.tokenName} (${token.tokenSymbol}): ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}`;
-            balanceDisplay.appendChild(tokenElement);
-        });
-    } else {
-        balanceDisplay.innerText = "No token balances found or unable to fetch data.";
-    }
-
-    // Display total value
-    const totalValueElement = document.createElement("div");
-    totalValueElement.classList.add("total-value");
-    totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
-    totalValueElement.className = "head1";
-    balanceDisplay.appendChild(totalValueElement);
-
-    // Display native token price if available
-    if (plsPrice) {
-        const nativeTokenElement = document.createElement("div");
-        nativeTokenElement.classList.add("token");
-        nativeTokenElement.innerText = `Native Token (PLS) Price: $${plsPrice.toFixed(4)}`;
-        balanceDisplay.appendChild(nativeTokenElement);
-    }
-}
 
 
         // Call the function to fetch and display balances automatically when the page loads
@@ -392,3 +403,4 @@ async function displayBalances() {
 </body>
 
 </html>
+
