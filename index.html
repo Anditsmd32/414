@@ -22,8 +22,8 @@
         }
         .sticky-div {
             position: sticky;
-            top: 0; /* Adjust this value to control how far from the top of the viewport the element sticks */
-            z-index: 10; /* Ensures the sticky element stays on top of other content */
+            top: 0;
+            z-index: 10;
         }
 
         h1 {
@@ -54,8 +54,11 @@
         // Initialize Web3
         const web3 = new Web3("https://rpc.pulsechain.com");
 
-        const daiTokenAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F"; // DAI Stablecoin (DAI)
+        const daiTokenAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
         const lpContractAddress = "0xfC64556FAA683e6087F425819C7Ca3C558e13aC1";
+        const wplsAddress = "0xa1077a294dde1b09bb078844df40758a5d0f9a27";
+        const atropaAddress = "0xCc78a0acDF847A2C1714d2a925bB4477df5D48a6";
+
         const lpAbi = [
             {
                 constant: true,
@@ -88,9 +91,9 @@
             const lpContract = new web3.eth.Contract(lpAbi, lpContractAddress);
             try {
                 const reserves = await lpContract.methods.getReserves().call();
-                const reserveDAI = parseFloat(reserves.reserve0); // Assume DAI is reserve0
-                const reserveOther = parseFloat(reserves.reserve1); // Other token in the LP
-                const daiPrice = reserveOther / reserveDAI; // Price calculation
+                const reserveDAI = parseFloat(reserves.reserve0);
+                const reserveOther = parseFloat(reserves.reserve1);
+                const daiPrice = reserveOther / reserveDAI;
                 console.log(`DAI Price from LP: $${daiPrice.toFixed(4)}`);
                 return daiPrice;
             } catch (error) {
@@ -120,26 +123,10 @@
             }
         }
 
-        // Fetch native token price from CoinGecko
-        async function fetchNativeTokenPrice() {
-            const url = `https://api.coingecko.com/api/v3/simple/price?ids=pulsechain&vs_currencies=usd`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    console.error("Error fetching native token price:", response.statusText);
-                    return null;
-                }
-                const data = await response.json();
-                return data.pulsechain ? data.pulsechain.usd : null;
-            } catch (error) {
-                console.error("Error fetching native token price:", error);
-                return null;
-            }
-        }
-
         // Fetch token balances from PulseChain API
         async function fetchTokenBalances(walletAddress) {
-            const url = `https://api.scan.pulsechain.com/api?module=account&action=tokenlist&address=${walletAddress}`;
+            const timestamp = Date.now();
+            const url = `https://api.scan.pulsechain.com/api?module=account&action=tokenlist&address=${walletAddress}&timestamp=${timestamp}`;
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -155,115 +142,130 @@
         }
 
         // Fetch PLS price from CoinGecko API
-async function fetchPLSPrice() {
-    const url = `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0xA1077a294dDE1B09bB078844df40758a5D0f9a27&vs_currencies=usd`;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.error("Error fetching PLS price:", response.statusText);
-            return null;
+        async function fetchPLSPrice() {
+            const url = `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0xA1077a294dDE1B09bB078844df40758a5D0f9a27&vs_currencies=usd`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error("Error fetching PLS price:", response.statusText);
+                    return null;
+                }
+                const data = await response.json();
+                return data["0xA1077a294dDE1B09bB078844df40758a5D0f9a27"]?.usd || null;
+            } catch (error) {
+                console.error("Error fetching PLS price:", error);
+                return null;
+            }
         }
-        const data = await response.json();
-        return data["0xA1077a294dDE1B09bB078844df40758a5D0f9a27"]?.usd || null;
-    } catch (error) {
-        console.error("Error fetching PLS price:", error);
-        return null;
-    }
-}
 
-// Display all token balances
-async function displayBalances() {
-    const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
-    const balanceDisplay = document.getElementById("balances");
-    balanceDisplay.innerHTML = ""; // Clear previous results
-    let totalValue = 0;
-    let tokenData = [];
+        // Display all token balances
+        async function displayBalances() {
+            const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
+            const balanceDisplay = document.getElementById("balances");
+            balanceDisplay.innerHTML = ""; // Clear previous results
+            let totalValue = 0;
+            let tokenData = [];
 
-    // Fetch DAI price
-    const daiPrice = await fetchDAIPriceFromLP();
-    // Fetch native token price (PLS)
-    const plsPrice = await fetchPLSPrice();
+            // Fetch DAI price
+            const daiPrice = await fetchDAIPriceFromLP();
+            // Fetch native token price (PLS)
+            const plsPrice = await fetchPLSPrice();
 
-    // Fetch all token balances
-    const balances = await fetchTokenBalances(walletAddress);
-    if (balances && balances.length > 0) {
-        for (const token of balances) {
-            const tokenName = token.name;
-            const tokenSymbol = token.symbol;
-            const tokenAddress = token.contractAddress;
-            const tokenBalance = parseFloat(token.balance) / Math.pow(10, parseInt(token.decimals));
+            // Token logo mapping
+            const tokenLogos = {
+                "DAI Stablecoin": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pdailogo-nSzY5iaB0twfGisYc7Z4EsCmVWCAb9.png",
+                "X": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/xlogo-ETOo9JeZ8X3ZeoX7SfCurfcbe13apQ.png",
+                "Hammer Time": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/discoverylogo-1my09cAWD8E5ChwkMbBqMCx1qX2dBU.png",
+                "DAI Stablecoin from Ethereum": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/edailogo-fHpBkJde7NveJZ1FAM3o0YuHj44xxJ.png",
+                "INCENTIVE": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/INClogo-k2oE92haESaOvrzci0UxVTjPBxqzSy.png",
+                "PulseX": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/PLSXlogo-R7iYFTantq0U32414X28D3s3SbAJwu.png",
+                "The Grays Currency": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pTGClogo-Pwy7QtsEcGfiHMT1YCoOUvwijVE9Rz.png",
+                "HEX": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/pHEXlogo-d8WaPLgjO1QFzlRqq1Mr3JY68aSUs1.png",
+                "In The Know": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/gBABYlogo-gpHLCYuAnSKHmW8FBLQBv66muz6MF9.png",
+                "Princess DAI": "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/princessdailogo-i3Gb9PIikGEPhjUQXQVIKKCI9SueMt.png",
+                "Wrapped Pulse": "https://static.debank.com/image/pls_token/logo_url/0xa1077a294dde1b09bb078844df40758a5d0f9a27/aa6be079fa9eb568e02150734ebb3db0.png"
+            };
 
-            if (
-                tokenAddress.toLowerCase() === daiTokenAddress.toLowerCase() &&
-                tokenName === "Dai Stablecoin" &&
-                tokenSymbol === "DAI" &&
-                daiPrice
-            ) {
-                const daiValue = tokenBalance * daiPrice;
-                tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: daiValue });
-                totalValue += daiValue;
-            } else if (tokenName === "Dai Stablecoin from Ethereum") {
-                const daiValue = tokenBalance * 1;
-                tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: daiValue });
-                totalValue += daiValue;
-            } else {
-                const tokenPrice = await fetchTokenPrice(tokenAddress);
-                if (tokenPrice) {
-                    const tokenValue = tokenBalance * tokenPrice;
-                    tokenData.push({ tokenName, tokenSymbol, tokenBalance, value: tokenValue });
-                    totalValue += tokenValue;
+            // Fetch all token balances
+            const balances = await fetchTokenBalances(walletAddress);
+            if (balances && balances.length > 0) {
+                for (const token of balances) {
+                    const tokenName = token.name;
+                    const tokenSymbol = token.symbol;
+                    const tokenAddress = token.contractAddress.toLowerCase();
+                    const tokenBalance = parseFloat(token.balance) / Math.pow(10, parseInt(token.decimals));
+                    const fullTokenName = `${tokenName} (${tokenSymbol})`;
+
+                    let tokenPrice;
+                    if (tokenAddress === daiTokenAddress.toLowerCase() && tokenName === "Dai Stablecoin" && tokenSymbol === "DAI") {
+                        tokenPrice = daiPrice;
+                    } else if (tokenName === "Dai Stablecoin from Ethereum") {
+                        tokenPrice = 1; // Assume 1:1 for DAI from Ethereum
+                    } else {
+                        tokenPrice = await fetchTokenPrice(tokenAddress);
+                    }
+
+                    if (tokenPrice) {
+                        const tokenValue = tokenBalance * tokenPrice;
+                        tokenData.push({ 
+                            fullTokenName, 
+                            tokenBalance, 
+                            value: tokenValue,
+                            logo: tokenLogos[tokenName] || tokenLogos["Wrapped Pulse"] 
+                        });
+                        totalValue += tokenValue;
+                    }
                 }
             }
-        }
 
-        // Add PLS balance if available
-        if (plsPrice) {
-            const plsBalance = await fetchTokenBalance(walletAddress, "0xA1077a294dDE1B09bB078844df40758a5D0f9a27");
-            const plsValue = plsBalance * plsPrice;
-            if (plsBalance > 0) {
-                tokenData.push({ tokenName: "PulseChain", tokenSymbol: "PLS", tokenBalance: plsBalance, value: plsValue });
-                totalValue += plsValue;
+            // Add PLS balance if available
+            if (plsPrice) {
+                const plsBalance = await web3.eth.getBalance(walletAddress);
+                const plsBalanceInEther = web3.utils.fromWei(plsBalance, 'ether');
+                const plsValue = parseFloat(plsBalanceInEther) * plsPrice;
+                if (plsBalance > 0) {
+                    tokenData.push({ 
+                        fullTokenName: "PulseChain (PLS)", 
+                        tokenBalance: parseFloat(plsBalanceInEther), 
+                        value: plsValue, 
+                        logo: tokenLogos["Wrapped Pulse"] 
+                    });
+                    totalValue += plsValue;
+                }
             }
+
+            // Sort tokens by value (highest to lowest)
+            tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
+
+            // Display sorted tokens
+            tokenData.forEach((token) => {
+                const tokenElement = document.createElement("div");
+                tokenElement.classList.add("token");
+                tokenElement.innerHTML = `
+                    <img src="${token.logo}" alt="${token.fullTokenName} logo" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 10px;">
+                    ${token.fullTokenName}: ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}
+                `;
+                balanceDisplay.appendChild(tokenElement);
+            });
+
+            if (tokenData.length === 0) {
+                balanceDisplay.innerText = "No token balances found or unable to fetch data.";
+            }
+
+            // Display total value
+            const totalValueElement = document.createElement("div");
+            totalValueElement.classList.add("total-value");
+            totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
+            totalValueElement.className = "head1";
+            balanceDisplay.appendChild(totalValueElement);
         }
-
-        // Sort tokens by value (highest to lowest)
-        tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
-
-        // Display sorted tokens
-        tokenData.forEach((token) => {
-            const tokenElement = document.createElement("div");
-            tokenElement.classList.add("token");
-            tokenElement.innerText = `${token.tokenName} (${token.tokenSymbol}): ${token.tokenBalance.toFixed(4)} = $${token.value.toFixed(2)}`;
-            balanceDisplay.appendChild(tokenElement);
-        });
-    } else {
-        balanceDisplay.innerText = "No token balances found or unable to fetch data.";
-    }
-
-    // Display total value
-    const totalValueElement = document.createElement("div");
-    totalValueElement.classList.add("total-value");
-    totalValueElement.innerText = `Total Value: $${totalValue.toFixed(2)}`;
-    totalValueElement.className = "head1";
-    balanceDisplay.appendChild(totalValueElement);
-
-    // Display native token price if available
-    if (plsPrice) {
-        const nativeTokenElement = document.createElement("div");
-        nativeTokenElement.classList.add("token");
-        nativeTokenElement.innerText = `Native Token (PLS) Price: $${plsPrice.toFixed(4)}`;
-        balanceDisplay.appendChild(nativeTokenElement);
-    }
-}
-
 
         // Call the function to fetch and display balances automatically when the page loads
         window.onload = displayBalances;
     </script>
 </head>
 <body>
-
-    <div  class="sticky-div" style="display: inline-block;width: 100%;background-color: black;margin:0px;height:40px;">
+    <div class="sticky-div" style="display: inline-block;width: 100%;background-color: black;margin:0px;height:40px;">
         <div style="width:1100px;margin-left:auto;margin-right:auto;color:white;line-height: 40px;">    
             FOUR<span style="color:goldenrod;font-weight: bold;">1</span>FOUR
             <span style="float:right">
@@ -288,8 +290,6 @@ async function displayBalances() {
 
             <div id="balances">Loading...</div>
 
-
-
     </center>
         </div>
     </div>
@@ -309,7 +309,7 @@ async function displayBalances() {
             <br><br>
 
             <h3>A Safe Haven for Your Investments</h3>
-            Your trust and security are our top priorities. All liquidity pools (LPs) are permanently burned, contracts are secure and transparent, and rug pulls are impossible. With Four1Four, you’re investing in a fully committed safe haven for crypto enthusiasts.
+            Your trust and security are our top priorities. All liquidity pools (LPs) are permanently burned, contracts are secure and transparent, and rug pulls are impossible. With Four1Four, you're investing in a fully committed safe haven for crypto enthusiasts.
         
         </div>
     </div>
@@ -339,8 +339,6 @@ async function displayBalances() {
         </div>
     </div>
     
-
-
     <div style="width: 100%;background-color: black;margin:0px;height:2px;"></div>
 
     <div id="liquidity" style="width: 100%;background-image: url('img2.png'); height: 800px;background-size: cover;background-position: center;"></div>
@@ -390,5 +388,5 @@ async function displayBalances() {
 
     </div>
 </body>
-
 </html>
+
