@@ -303,6 +303,10 @@
                 const reserves = await lpContract.methods.getReserves().call();
                 const reserveDAI = parseFloat(reserves.reserve0);
                 const reserveOther = parseFloat(reserves.reserve1);
+                if (reserveDAI === 0) {
+                    console.error("Error: Reserve DAI is zero");
+                    return null;
+                }
                 const daiPrice = reserveOther / reserveDAI;
                 console.log(`DAI Price from LP: $${daiPrice.toFixed(4)}`);
                 return daiPrice;
