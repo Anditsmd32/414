@@ -376,7 +376,7 @@
         async function displayBalances() {
             const walletAddress = "0xe101c45cb2352059139205177e29d16184db513b"; // Fixed wallet address
             const balanceDisplay = document.getElementById("balances");
-            balanceDisplay.innerHTML = ""; // Clear previous results
+            balanceDisplay.innerHTML = "Loading..."; // Show loading message
             let totalValue = 0;
             let tokenData = [];
 
@@ -421,34 +421,41 @@
                         tokenPrice = await fetchTokenPrice(tokenAddress);
                     }
 
-                    if (tokenPrice) {
+                    if (tokenPrice && !isNaN(tokenPrice) && !isNaN(tokenBalance)) {
                         const tokenValue = tokenBalance * tokenPrice;
-                        tokenData.push({ 
-                            fullTokenName, 
-                            tokenBalance, 
-                            value: tokenValue,
-                            logo: tokenLogos[tokenName] || tokenLogos["Wrapped Pulse"] 
-                        });
-                        totalValue += tokenValue;
+                        if (!isNaN(tokenValue)) {
+                            tokenData.push({ 
+                                fullTokenName, 
+                                tokenBalance, 
+                                value: tokenValue,
+                                logo: tokenLogos[tokenName] || tokenLogos["Wrapped Pulse"] 
+                            });
+                            totalValue += tokenValue;
+                        }
                     }
                 }
             }
 
             // Add PLS balance if available
-            if (plsPrice) {
+            if (plsPrice && !isNaN(plsPrice)) {
                 const plsBalance = await web3.eth.getBalance(walletAddress);
-                const plsBalanceInEther = web3.utils.fromWei(plsBalance, 'ether');
-                const plsValue = parseFloat(plsBalanceInEther) * plsPrice;
-                if (plsBalance > 0) {
-                    tokenData.push({ 
-                        fullTokenName: "PulseChain (PLS)", 
-                        tokenBalance: parseFloat(plsBalanceInEther), 
-                        value: plsValue, 
-                        logo: tokenLogos["Wrapped Pulse"] 
-                    });
-                    totalValue += plsValue;
+                const plsBalanceInEther = parseFloat(web3.utils.fromWei(plsBalance, 'ether'));
+                if (!isNaN(plsBalanceInEther)) {
+                    const plsValue = plsBalanceInEther * plsPrice;
+                    if (!isNaN(plsValue)) {
+                        tokenData.push({ 
+                            fullTokenName: "PulseChain (PLS)", 
+                            tokenBalance: plsBalanceInEther, 
+                            value: plsValue, 
+                            logo: tokenLogos["Wrapped Pulse"] 
+                        });
+                        totalValue += plsValue;
+                    }
                 }
             }
+
+            // Clear previous results
+            balanceDisplay.innerHTML = "";
 
             // Sort tokens by value (highest to lowest)
             tokenData = tokenData.filter(token => token.value > 10).sort((a, b) => b.value - a.value);
